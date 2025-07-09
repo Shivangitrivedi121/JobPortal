@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { 
   Home, 
   Briefcase, 
@@ -14,6 +15,7 @@ import { useAuth } from '../../context/AuthContext';
 
 const Sidebar = ({ isOpen, onClose }) => {
   const { user } = useAuth();
+  const location = useLocation();
 
   const adminMenuItems = [
     { icon: Home, label: 'Dashboard', path: '/admin' },
@@ -53,6 +55,10 @@ const Sidebar = ({ isOpen, onClose }) => {
     }
   };
 
+  const isActiveLink = (path) => {
+    return location.pathname === path;
+  };
+
   return (
     <>
       {isOpen && (
@@ -79,14 +85,23 @@ const Sidebar = ({ isOpen, onClose }) => {
             
             <nav className="mt-8 flex-1 px-4 space-y-2">
               {getMenuItems().map((item) => (
-                <a
+                <Link
                   key={item.path}
-                  href={item.path}
-                  className="group flex items-center px-4 py-3 text-sm font-medium text-gray-700 rounded-lg hover:bg-blue-50 hover:text-blue-700 transition-colors"
+                  to={item.path}
+                  onClick={onClose}
+                  className={`group flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
+                    isActiveLink(item.path)
+                      ? 'bg-blue-100 text-blue-700'
+                      : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700'
+                  }`}
                 >
-                  <item.icon className="mr-3 h-5 w-5 text-gray-500 group-hover:text-blue-700" />
+                  <item.icon className={`mr-3 h-5 w-5 ${
+                    isActiveLink(item.path)
+                      ? 'text-blue-700'
+                      : 'text-gray-500 group-hover:text-blue-700'
+                  }`} />
                   {item.label}
-                </a>
+                </Link>
               ))}
             </nav>
           </div>
