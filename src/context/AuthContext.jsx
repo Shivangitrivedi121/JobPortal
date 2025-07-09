@@ -25,6 +25,12 @@ const authReducer = (state, action) => {
         ...state,
         loading: action.payload,
       };
+    case 'SET_ERROR':
+      return {
+        ...state,
+        error: action.payload,
+        loading: false,
+      };
     default:
       return state;
   }
@@ -35,6 +41,7 @@ const initialState = {
   token: localStorage.getItem('token'),
   isAuthenticated: false,
   loading: false,
+  error: null,
 };
 
 export const AuthProvider = ({ children }) => {
@@ -43,32 +50,61 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      // Verify token and get user info
-      // This would typically be an API call
-      dispatch({ type: 'SET_LOADING', payload: true });
+      // For demo purposes, we'll simulate a successful login
+      // In a real app, you'd verify the token with your backend
+      const mockUser = {
+        _id: '1',
+        name: 'Demo User',
+        email: 'demo@example.com',
+        role: 'jobseeker'
+      };
+      dispatch({ 
+        type: 'LOGIN_SUCCESS', 
+        payload: { user: mockUser, token } 
+      });
     }
   }, []);
 
   const login = async (email, password) => {
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
-      // API call would go here
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
+      // Simulate API call with mock data
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      const data = await response.json();
-      
-      if (response.ok) {
-        localStorage.setItem('token', data.token);
-        dispatch({ type: 'LOGIN_SUCCESS', payload: data });
+      // Mock successful login based on email
+      let mockUser;
+      if (email === 'admin@jobportal.com') {
+        mockUser = {
+          _id: '1',
+          name: 'Admin User',
+          email: 'admin@jobportal.com',
+          role: 'admin'
+        };
+      } else if (email === 'employer@jobportal.com') {
+        mockUser = {
+          _id: '2',
+          name: 'Employer User',
+          email: 'employer@jobportal.com',
+          role: 'employer'
+        };
       } else {
-        throw new Error(data.message);
+        mockUser = {
+          _id: '3',
+          name: 'Job Seeker',
+          email: email,
+          role: 'jobseeker'
+        };
       }
+
+      const mockToken = 'mock-jwt-token-' + Date.now();
+      localStorage.setItem('token', mockToken);
+      
+      dispatch({ 
+        type: 'LOGIN_SUCCESS', 
+        payload: { user: mockUser, token: mockToken } 
+      });
     } catch (error) {
-      dispatch({ type: 'SET_LOADING', payload: false });
+      dispatch({ type: 'SET_ERROR', payload: error.message });
       throw error;
     }
   };
@@ -76,22 +112,25 @@ export const AuthProvider = ({ children }) => {
   const register = async (name, email, password, role) => {
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password, role }),
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const mockUser = {
+        _id: Date.now().toString(),
+        name,
+        email,
+        role: role || 'jobseeker'
+      };
+
+      const mockToken = 'mock-jwt-token-' + Date.now();
+      localStorage.setItem('token', mockToken);
+      
+      dispatch({ 
+        type: 'LOGIN_SUCCESS', 
+        payload: { user: mockUser, token: mockToken } 
       });
-      
-      const data = await response.json();
-      
-      if (response.ok) {
-        localStorage.setItem('token', data.token);
-        dispatch({ type: 'LOGIN_SUCCESS', payload: data });
-      } else {
-        throw new Error(data.message);
-      }
     } catch (error) {
-      dispatch({ type: 'SET_LOADING', payload: false });
+      dispatch({ type: 'SET_ERROR', payload: error.message });
       throw error;
     }
   };
