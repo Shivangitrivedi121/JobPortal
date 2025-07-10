@@ -12,8 +12,25 @@ const FindJobs: React.FC = () => {
   const [showApplicationModal, setShowApplicationModal] = useState(false);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [applicationData, setApplicationData] = useState({
+    // Personal Information
+    fullName: '',
+    email: '',
+    phone: '',
+    address: '',
+    // Professional Information
     coverLetter: '',
-    resume: null as File | null
+    resume: null as File | null,
+    expectedSalary: '',
+    availableStartDate: '',
+    workExperience: '',
+    education: '',
+    skills: '',
+    // Additional Information
+    portfolioUrl: '',
+    linkedinUrl: '',
+    githubUrl: '',
+    references: '',
+    additionalNotes: ''
   });
 
   // Sample job data with more comprehensive information
@@ -169,15 +186,53 @@ const FindJobs: React.FC = () => {
   };
 
   const handleSubmitApplication = () => {
-    if (!applicationData.coverLetter || !applicationData.resume) {
-      alert('Please fill in all required fields and upload your resume.');
+    // Validate required fields
+    const requiredFields = ['fullName', 'email', 'phone', 'coverLetter', 'resume'];
+    const missingFields = requiredFields.filter(field => {
+      if (field === 'resume') return !applicationData.resume;
+      return !applicationData[field as keyof typeof applicationData];
+    });
+
+    if (missingFields.length > 0) {
+      alert('Please fill in all required fields: ' + missingFields.join(', '));
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(applicationData.email)) {
+      alert('Please enter a valid email address.');
+      return;
+    }
+
+    // Phone validation
+    const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+    if (!phoneRegex.test(applicationData.phone.replace(/\s/g, ''))) {
+      alert('Please enter a valid phone number.');
       return;
     }
 
     // Simulate application submission
     alert(`Application submitted successfully for ${selectedJob?.title}!`);
     setShowApplicationModal(false);
-    setApplicationData({ coverLetter: '', resume: null });
+    setApplicationData({
+      fullName: '',
+      email: '',
+      phone: '',
+      address: '',
+      coverLetter: '',
+      resume: null,
+      expectedSalary: '',
+      availableStartDate: '',
+      workExperience: '',
+      education: '',
+      skills: '',
+      portfolioUrl: '',
+      linkedinUrl: '',
+      githubUrl: '',
+      references: '',
+      additionalNotes: ''
+    });
     setSelectedJob(null);
   };
 
@@ -345,7 +400,7 @@ const FindJobs: React.FC = () => {
       {/* Application Modal */}
       {showApplicationModal && selectedJob && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold text-gray-900">Apply for {selectedJob.title}</h2>
@@ -364,6 +419,177 @@ const FindJobs: React.FC = () => {
               </div>
 
               <div className="space-y-6">
+                {/* Personal Information Section */}
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Personal Information</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Full Name *
+                      </label>
+                      <input
+                        type="text"
+                        value={applicationData.fullName}
+                        onChange={(e) => setApplicationData({ ...applicationData, fullName: e.target.value })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="Enter your full name"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Email Address *
+                      </label>
+                      <input
+                        type="email"
+                        value={applicationData.email}
+                        onChange={(e) => setApplicationData({ ...applicationData, email: e.target.value })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="your.email@example.com"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Phone Number *
+                      </label>
+                      <input
+                        type="tel"
+                        value={applicationData.phone}
+                        onChange={(e) => setApplicationData({ ...applicationData, phone: e.target.value })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="+1 (555) 123-4567"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Address
+                      </label>
+                      <input
+                        type="text"
+                        value={applicationData.address}
+                        onChange={(e) => setApplicationData({ ...applicationData, address: e.target.value })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="City, State, Country"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Professional Information Section */}
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Professional Information</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Expected Salary
+                      </label>
+                      <input
+                        type="text"
+                        value={applicationData.expectedSalary}
+                        onChange={(e) => setApplicationData({ ...applicationData, expectedSalary: e.target.value })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="e.g., $80,000 - $100,000"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Available Start Date
+                      </label>
+                      <input
+                        type="date"
+                        value={applicationData.availableStartDate}
+                        onChange={(e) => setApplicationData({ ...applicationData, availableStartDate: e.target.value })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Work Experience Summary
+                      </label>
+                      <textarea
+                        value={applicationData.workExperience}
+                        onChange={(e) => setApplicationData({ ...applicationData, workExperience: e.target.value })}
+                        rows={3}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="Briefly describe your relevant work experience..."
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Education Background
+                      </label>
+                      <textarea
+                        value={applicationData.education}
+                        onChange={(e) => setApplicationData({ ...applicationData, education: e.target.value })}
+                        rows={2}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="Your educational qualifications..."
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Key Skills
+                      </label>
+                      <input
+                        type="text"
+                        value={applicationData.skills}
+                        onChange={(e) => setApplicationData({ ...applicationData, skills: e.target.value })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="e.g., JavaScript, React, Node.js, Python..."
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Professional Links Section */}
+                <div className="bg-purple-50 p-4 rounded-lg">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Professional Links (Optional)</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Portfolio URL
+                      </label>
+                      <input
+                        type="url"
+                        value={applicationData.portfolioUrl}
+                        onChange={(e) => setApplicationData({ ...applicationData, portfolioUrl: e.target.value })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="https://yourportfolio.com"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        LinkedIn Profile
+                      </label>
+                      <input
+                        type="url"
+                        value={applicationData.linkedinUrl}
+                        onChange={(e) => setApplicationData({ ...applicationData, linkedinUrl: e.target.value })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="https://linkedin.com/in/username"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        GitHub Profile
+                      </label>
+                      <input
+                        type="url"
+                        value={applicationData.githubUrl}
+                        onChange={(e) => setApplicationData({ ...applicationData, githubUrl: e.target.value })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="https://github.com/username"
+                      />
+                    </div>
+                  </div>
+                </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Cover Letter *
@@ -371,7 +597,7 @@ const FindJobs: React.FC = () => {
                   <textarea
                     value={applicationData.coverLetter}
                     onChange={(e) => setApplicationData({ ...applicationData, coverLetter: e.target.value })}
-                    rows={6}
+                    rows={4}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Tell us why you're interested in this position and what makes you a great fit..."
                     required
@@ -380,9 +606,9 @@ const FindJobs: React.FC = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Resume *
+                    Upload Resume *
                   </label>
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-400 transition-colors">
                     <input
                       type="file"
                       accept=".pdf,.doc,.docx"
@@ -393,13 +619,48 @@ const FindJobs: React.FC = () => {
                     <label htmlFor="resume-upload" className="cursor-pointer">
                       <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
                       <p className="text-sm text-gray-600">
-                        {applicationData.resume ? applicationData.resume.name : 'Click to upload your resume'}
+                        {applicationData.resume ? (
+                          <span className="text-green-600 font-medium">✓ {applicationData.resume.name}</span>
+                        ) : (
+                          'Click to upload your resume'
+                        )}
                       </p>
                       <p className="text-xs text-gray-500 mt-1">PDF, DOC, or DOCX (max 5MB)</p>
                     </label>
                   </div>
                 </div>
 
+                {/* Additional Information Section */}
+                <div className="bg-green-50 p-4 rounded-lg">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Additional Information</h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        References
+                      </label>
+                      <textarea
+                        value={applicationData.references}
+                        onChange={(e) => setApplicationData({ ...applicationData, references: e.target.value })}
+                        rows={2}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="Professional references (Name, Title, Company, Contact)..."
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Additional Notes
+                      </label>
+                      <textarea
+                        value={applicationData.additionalNotes}
+                        onChange={(e) => setApplicationData({ ...applicationData, additionalNotes: e.target.value })}
+                        rows={2}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="Any additional information you'd like to share..."
+                      />
+                    </div>
+                  </div>
+                </div>
                 <div className="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
                   <button
                     onClick={() => setShowApplicationModal(false)}
