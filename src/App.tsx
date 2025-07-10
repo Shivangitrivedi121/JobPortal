@@ -8,7 +8,15 @@ import RegisterForm from './components/Auth/RegisterForm';
 import AdminDashboard from './components/Dashboard/AdminDashboard';
 import EmployerDashboard from './components/Dashboard/EmployerDashboard';
 import JobSeekerDashboard from './components/Dashboard/JobSeekerDashboard';
-import JobList from './components/Jobs/JobList';
+import FindJobs from './components/Pages/FindJobs';
+import MyApplications from './components/Pages/MyApplications';
+import SavedJobs from './components/Pages/SavedJobs';
+import Profile from './components/Pages/Profile';
+import PostJob from './components/Pages/PostJob';
+import MyJobs from './components/Pages/MyJobs';
+import AllUsers from './components/Pages/AllUsers';
+import AllJobs from './components/Pages/AllJobs';
+import AllApplications from './components/Pages/AllApplications';
 
 const AppContent: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
@@ -31,19 +39,6 @@ const AppContent: React.FC = () => {
     );
   }
 
-  const getDashboardRoute = () => {
-    switch (user?.role) {
-      case 'admin':
-        return '/admin';
-      case 'employer':
-        return '/employer';
-      case 'jobseeker':
-        return '/jobseeker';
-      default:
-        return '/';
-    }
-  };
-
   return (
     <Router>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
@@ -55,11 +50,51 @@ const AppContent: React.FC = () => {
           <main className="flex-1 lg:ml-0 p-6">
             <div className="max-w-7xl mx-auto">
               <Routes>
-                <Route path="/" element={<Navigate to={getDashboardRoute()} replace />} />
-                <Route path="/admin" element={user?.role === 'admin' ? <AdminDashboard /> : <Navigate to={getDashboardRoute()} replace />} />
-                <Route path="/employer" element={user?.role === 'employer' ? <EmployerDashboard /> : <Navigate to={getDashboardRoute()} replace />} />
-                <Route path="/jobseeker" element={user?.role === 'jobseeker' ? <JobSeekerDashboard /> : <Navigate to={getDashboardRoute()} replace />} />
-                <Route path="/jobs" element={<JobList />} />
+                {/* Admin Routes */}
+                {user?.role === 'admin' && (
+                  <>
+                    <Route path="/admin" element={<AdminDashboard />} />
+                    <Route path="/admin/users" element={<AllUsers />} />
+                    <Route path="/admin/jobs" element={<AllJobs />} />
+                    <Route path="/admin/applications" element={<AllApplications />} />
+                    <Route path="/admin/analytics" element={<div className="text-center py-12"><h2 className="text-2xl font-bold text-gray-900">Analytics Dashboard</h2><p className="text-gray-600 mt-2">Coming Soon</p></div>} />
+                    <Route path="/admin/settings" element={<div className="text-center py-12"><h2 className="text-2xl font-bold text-gray-900">System Settings</h2><p className="text-gray-600 mt-2">Coming Soon</p></div>} />
+                    <Route path="/" element={<Navigate to="/admin" replace />} />
+                  </>
+                )}
+
+                {/* Employer Routes */}
+                {user?.role === 'employer' && (
+                  <>
+                    <Route path="/employer" element={<EmployerDashboard />} />
+                    <Route path="/employer/post-job" element={<PostJob />} />
+                    <Route path="/employer/jobs" element={<MyJobs />} />
+                    <Route path="/employer/applications" element={<AllApplications />} />
+                    <Route path="/employer/reviews" element={<div className="text-center py-12"><h2 className="text-2xl font-bold text-gray-900">Company Reviews</h2><p className="text-gray-600 mt-2">Coming Soon</p></div>} />
+                    <Route path="/" element={<Navigate to="/employer" replace />} />
+                  </>
+                )}
+
+                {/* Job Seeker Routes */}
+                {user?.role === 'jobseeker' && (
+                  <>
+                    <Route path="/jobseeker" element={<JobSeekerDashboard />} />
+                    <Route path="/jobseeker/search" element={<FindJobs />} />
+                    <Route path="/jobseeker/applications" element={<MyApplications />} />
+                    <Route path="/jobseeker/saved" element={<SavedJobs />} />
+                    <Route path="/jobseeker/profile" element={<Profile />} />
+                    <Route path="/" element={<Navigate to="/jobseeker" replace />} />
+                  </>
+                )}
+
+                {/* Default redirect based on role */}
+                <Route path="*" element={
+                  <Navigate to={
+                    user?.role === 'admin' ? '/admin' :
+                    user?.role === 'employer' ? '/employer' :
+                    '/jobseeker'
+                  } replace />
+                } />
               </Routes>
             </div>
           </main>
