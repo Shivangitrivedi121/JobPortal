@@ -1,8 +1,11 @@
 import React from 'react';
-import { Search, Bookmark, FileText, TrendingUp, MapPin, Clock, Star, Users, Building, Calendar, Eye, Send } from 'lucide-react';
+import { Search, Bookmark, FileText, TrendingUp, MapPin, Clock, Star, Users, Building, Calendar, Eye, Send, Upload, Download, Edit, ArrowRight, Plus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import StatsCard from './StatsCard';
 
 const JobSeekerDashboard: React.FC = () => {
+  const navigate = useNavigate();
+
   const stats = [
     {
       title: 'Applications Sent',
@@ -43,7 +46,12 @@ const JobSeekerDashboard: React.FC = () => {
       status: 'interview',
       appliedDate: '2 days ago',
       salary: '$120,000 - $160,000',
-      interviewDate: '2024-01-25'
+      interviewDate: '2024-01-25',
+      applicationNumber: 'APP-2024-001',
+      jobType: 'full-time',
+      description: 'We are looking for an experienced frontend developer to join our dynamic team.',
+      requirements: ['React', 'TypeScript', 'CSS', 'JavaScript', 'Git'],
+      feedback: 'Great portfolio and technical skills. Moving to final round.'
     },
     {
       id: '2',
@@ -53,7 +61,12 @@ const JobSeekerDashboard: React.FC = () => {
       status: 'pending',
       appliedDate: '1 week ago',
       salary: '$100,000 - $140,000',
-      interviewDate: null
+      interviewDate: null,
+      applicationNumber: 'APP-2024-002',
+      jobType: 'full-time',
+      description: 'Join our startup as a full stack engineer. Work on cutting-edge technology.',
+      requirements: ['Node.js', 'React', 'MongoDB', 'Express'],
+      feedback: ''
     },
     {
       id: '3',
@@ -63,7 +76,12 @@ const JobSeekerDashboard: React.FC = () => {
       status: 'accepted',
       appliedDate: '2 weeks ago',
       salary: '$80,000 - $110,000',
-      interviewDate: null
+      interviewDate: null,
+      applicationNumber: 'APP-2024-003',
+      jobType: 'full-time',
+      description: 'We are seeking a creative UI/UX designer to create amazing user experiences.',
+      requirements: ['Figma', 'Adobe Creative Suite', 'Prototyping'],
+      feedback: 'Excellent design portfolio and communication skills. Welcome to the team!'
     },
     {
       id: '4',
@@ -73,7 +91,12 @@ const JobSeekerDashboard: React.FC = () => {
       status: 'rejected',
       appliedDate: '3 weeks ago',
       salary: '$85,000 - $115,000',
-      interviewDate: null
+      interviewDate: null,
+      applicationNumber: 'APP-2024-004',
+      jobType: 'full-time',
+      description: 'Looking for a skilled React developer to join our frontend team.',
+      requirements: ['React', 'JavaScript', 'CSS', 'Redux'],
+      feedback: 'Strong technical background but position was filled internally.'
     }
   ];
 
@@ -87,7 +110,10 @@ const JobSeekerDashboard: React.FC = () => {
       type: 'full-time',
       rating: 4.7,
       applications: 23,
-      postedDate: '1 day ago'
+      postedDate: '1 day ago',
+      description: 'We are looking for a Senior React Developer to lead our frontend development team.',
+      requirements: ['React', 'TypeScript', 'Redux', 'Testing', 'Leadership'],
+      benefits: ['Health Insurance', 'Stock Options', 'Remote Work', '401k']
     },
     {
       id: '2',
@@ -98,7 +124,10 @@ const JobSeekerDashboard: React.FC = () => {
       type: 'full-time',
       rating: 4.5,
       applications: 15,
-      postedDate: '3 days ago'
+      postedDate: '3 days ago',
+      description: 'Join our remote team as a Frontend Engineer and work on innovative web applications.',
+      requirements: ['React', 'Vue.js', 'JavaScript', 'CSS', 'Git'],
+      benefits: ['Remote Work', 'Flexible Hours', 'Learning Budget']
     },
     {
       id: '3',
@@ -109,7 +138,10 @@ const JobSeekerDashboard: React.FC = () => {
       type: 'full-time',
       rating: 4.3,
       applications: 31,
-      postedDate: '5 days ago'
+      postedDate: '5 days ago',
+      description: 'Looking for a JavaScript Developer to work on our web platform and mobile applications.',
+      requirements: ['JavaScript', 'Node.js', 'React', 'MongoDB', 'API Development'],
+      benefits: ['Health Insurance', 'Gym Membership', 'Team Events']
     }
   ];
 
@@ -141,30 +173,58 @@ const JobSeekerDashboard: React.FC = () => {
     }
   };
 
-  const handleViewApplication = (applicationId: string) => {
-    alert(`Viewing application details for ${applicationId}`);
+  // Navigation handlers
+  const handleSearchJobs = () => {
+    navigate('/jobseeker/search');
+  };
+
+  const handleViewAllApplications = () => {
+    navigate('/jobseeker/applications');
+  };
+
+  const handleViewSavedJobs = () => {
+    navigate('/jobseeker/saved');
+  };
+
+  const handleUploadResume = () => {
+    navigate('/jobseeker/profile');
+  };
+
+  const handleViewApplicationDetails = (applicationId: string) => {
+    // Navigate to applications page with specific application highlighted
+    navigate('/jobseeker/applications', { state: { highlightId: applicationId } });
   };
 
   const handleApplyToJob = (jobId: string) => {
-    alert(`Applying to job ${jobId}`);
+    // Navigate to find jobs page and trigger apply modal
+    navigate('/jobseeker/search', { state: { applyToJob: jobId } });
   };
 
   const handleSaveJob = (jobId: string) => {
     alert(`Job ${jobId} saved to your saved jobs!`);
+    // In a real app, this would update the saved jobs state
   };
 
   const handleViewJobDetails = (jobId: string) => {
-    alert(`Viewing job details for ${jobId}`);
+    // Navigate to find jobs page and show job details
+    navigate('/jobseeker/search', { state: { viewJobDetails: jobId } });
+  };
+
+  const handleViewProfileAnalytics = () => {
+    navigate('/jobseeker/profile');
   };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Job Seeker Dashboard</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Welcome Back!</h1>
           <p className="text-gray-600 mt-1">Track your job search progress and discover new opportunities</p>
         </div>
-        <button className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200">
+        <button 
+          onClick={handleSearchJobs}
+          className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
+        >
           <Search className="w-5 h-5" />
           <span>Find Jobs</span>
         </button>
@@ -181,21 +241,33 @@ const JobSeekerDashboard: React.FC = () => {
       <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-gray-200">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <button className="flex items-center justify-center space-x-2 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors">
-            <Search className="w-6 h-6 text-gray-500" />
-            <span className="text-gray-700">Search Jobs</span>
+          <button 
+            onClick={handleSearchJobs}
+            className="flex items-center justify-center space-x-2 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors group"
+          >
+            <Search className="w-6 h-6 text-gray-500 group-hover:text-blue-600" />
+            <span className="text-gray-700 group-hover:text-blue-700">Search Jobs</span>
           </button>
-          <button className="flex items-center justify-center space-x-2 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-green-500 hover:bg-green-50 transition-colors">
-            <FileText className="w-6 h-6 text-gray-500" />
-            <span className="text-gray-700">Update Resume</span>
+          <button 
+            onClick={handleUploadResume}
+            className="flex items-center justify-center space-x-2 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-green-500 hover:bg-green-50 transition-colors group"
+          >
+            <Upload className="w-6 h-6 text-gray-500 group-hover:text-green-600" />
+            <span className="text-gray-700 group-hover:text-green-700">Upload Resume</span>
           </button>
-          <button className="flex items-center justify-center space-x-2 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors">
-            <Bookmark className="w-6 h-6 text-gray-500" />
-            <span className="text-gray-700">Saved Jobs</span>
+          <button 
+            onClick={handleViewSavedJobs}
+            className="flex items-center justify-center space-x-2 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors group"
+          >
+            <Bookmark className="w-6 h-6 text-gray-500 group-hover:text-purple-600" />
+            <span className="text-gray-700 group-hover:text-purple-700">Saved Jobs</span>
           </button>
-          <button className="flex items-center justify-center space-x-2 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-yellow-500 hover:bg-yellow-50 transition-colors">
-            <TrendingUp className="w-6 h-6 text-gray-500" />
-            <span className="text-gray-700">Profile Analytics</span>
+          <button 
+            onClick={handleViewProfileAnalytics}
+            className="flex items-center justify-center space-x-2 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-yellow-500 hover:bg-yellow-50 transition-colors group"
+          >
+            <TrendingUp className="w-6 h-6 text-gray-500 group-hover:text-yellow-600" />
+            <span className="text-gray-700 group-hover:text-yellow-700">Profile Analytics</span>
           </button>
         </div>
       </div>
@@ -205,12 +277,16 @@ const JobSeekerDashboard: React.FC = () => {
         <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-gray-200">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-gray-900">Recent Applications</h3>
-            <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+            <button 
+              onClick={handleViewAllApplications}
+              className="flex items-center text-blue-600 hover:text-blue-700 text-sm font-medium group"
+            >
               View All
+              <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
           <div className="space-y-4">
-            {recentApplications.map((application) => (
+            {recentApplications.slice(0, 3).map((application) => (
               <div key={application.id} className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
@@ -240,7 +316,7 @@ const JobSeekerDashboard: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-green-600">{application.salary}</span>
                   <button
-                    onClick={() => handleViewApplication(application.id)}
+                    onClick={() => handleViewApplicationDetails(application.id)}
                     className="flex items-center text-blue-600 hover:text-blue-700 text-sm font-medium"
                   >
                     <Eye className="w-4 h-4 mr-1" />
@@ -256,6 +332,14 @@ const JobSeekerDashboard: React.FC = () => {
                     </div>
                   </div>
                 )}
+
+                {application.feedback && (
+                  <div className="mt-3 p-2 bg-blue-50 rounded border border-blue-200">
+                    <div className="text-blue-800 text-sm">
+                      <strong>Feedback:</strong> {application.feedback}
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -265,8 +349,12 @@ const JobSeekerDashboard: React.FC = () => {
         <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-gray-200">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-gray-900">Recommended for You</h3>
-            <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+            <button 
+              onClick={handleSearchJobs}
+              className="flex items-center text-blue-600 hover:text-blue-700 text-sm font-medium group"
+            >
               View All
+              <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
           <div className="space-y-4">
@@ -304,6 +392,21 @@ const JobSeekerDashboard: React.FC = () => {
                   </span>
                 </div>
 
+                <p className="text-sm text-gray-600 mb-3 line-clamp-2">{job.description}</p>
+
+                <div className="flex flex-wrap gap-1 mb-3">
+                  {job.requirements.slice(0, 3).map((req, index) => (
+                    <span key={index} className="px-2 py-1 bg-gray-200 text-gray-700 text-xs rounded">
+                      {req}
+                    </span>
+                  ))}
+                  {job.requirements.length > 3 && (
+                    <span className="px-2 py-1 bg-gray-200 text-gray-700 text-xs rounded">
+                      +{job.requirements.length - 3} more
+                    </span>
+                  )}
+                </div>
+
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-gray-500">Posted {job.postedDate}</span>
                   <div className="flex items-center space-x-2">
@@ -338,7 +441,15 @@ const JobSeekerDashboard: React.FC = () => {
       <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-gray-200">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-900">Profile Completion</h3>
-          <span className="text-sm text-gray-500">85% Complete</span>
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-gray-500">85% Complete</span>
+            <button 
+              onClick={() => navigate('/jobseeker/profile')}
+              className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+            >
+              Complete Profile
+            </button>
+          </div>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 h-2 rounded-full" style={{ width: '85%' }}></div>
@@ -368,7 +479,12 @@ const JobSeekerDashboard: React.FC = () => {
             </div>
             <div>
               <p className="text-sm font-medium text-gray-900">Portfolio Link</p>
-              <p className="text-xs text-yellow-600">Add portfolio</p>
+              <button 
+                onClick={() => navigate('/jobseeker/profile')}
+                className="text-xs text-yellow-600 hover:text-yellow-700"
+              >
+                Add portfolio
+              </button>
             </div>
           </div>
         </div>
