@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Search, MapPin, Briefcase, Filter, SlidersHorizontal, Upload, FileText, Send } from 'lucide-react';
-import JobCard from '../Jobs/JobCard';
+import { Search, MapPin, Briefcase, Filter, SlidersHorizontal, Upload, FileText, Send, X, Star, Bookmark, Clock, DollarSign, Users, Building, Calendar } from 'lucide-react';
 import { Job } from '../../types';
 
 const FindJobs: React.FC = () => {
@@ -10,14 +9,14 @@ const FindJobs: React.FC = () => {
   const [salaryRange, setSalaryRange] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [showApplicationModal, setShowApplicationModal] = useState(false);
+  const [showJobDetailsModal, setShowJobDetailsModal] = useState(false);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [savedJobs, setSavedJobs] = useState<string[]>(['3', '5']); // Sample saved job IDs
   const [applicationData, setApplicationData] = useState({
-    // Personal Information
     fullName: '',
     email: '',
     phone: '',
     address: '',
-    // Professional Information
     coverLetter: '',
     resume: null as File | null,
     expectedSalary: '',
@@ -25,7 +24,6 @@ const FindJobs: React.FC = () => {
     workExperience: '',
     education: '',
     skills: '',
-    // Additional Information
     portfolioUrl: '',
     linkedinUrl: '',
     githubUrl: '',
@@ -33,17 +31,17 @@ const FindJobs: React.FC = () => {
     additionalNotes: ''
   });
 
-  // Sample job data with more comprehensive information
+  // Sample job data with comprehensive information
   const sampleJobs: Job[] = [
     {
       _id: '1',
       title: 'Senior Frontend Developer',
-      description: 'We are looking for an experienced frontend developer to join our dynamic team. You will be responsible for building user-facing features and ensuring great user experience. Work with cutting-edge technologies including React, TypeScript, and modern CSS frameworks.',
+      description: 'We are looking for an experienced frontend developer to join our dynamic team. You will be responsible for building user-facing features and ensuring great user experience. Work with cutting-edge technologies including React, TypeScript, and modern CSS frameworks. You will collaborate with designers, backend developers, and product managers to deliver high-quality web applications.',
       company: 'TechCorp Inc.',
       location: 'San Francisco, CA',
       salary: { min: 120000, max: 160000 },
       type: 'full-time',
-      requirements: ['React', 'TypeScript', 'CSS', 'JavaScript', 'Git', 'Redux', 'Testing'],
+      requirements: ['React', 'TypeScript', 'CSS', 'JavaScript', 'Git', 'Redux', 'Testing', 'Webpack', 'Node.js'],
       postedBy: 'employer1',
       applications: ['1', '2', '3'],
       ratings: [],
@@ -54,12 +52,12 @@ const FindJobs: React.FC = () => {
     {
       _id: '2',
       title: 'Full Stack Engineer',
-      description: 'Join our startup as a full stack engineer. Work on cutting-edge technology and help build products that millions of users love. You\'ll be involved in both frontend and backend development.',
+      description: 'Join our startup as a full stack engineer. Work on cutting-edge technology and help build products that millions of users love. You\'ll be involved in both frontend and backend development, working with modern technologies and agile methodologies.',
       company: 'StartupXYZ',
       location: 'New York, NY',
       salary: { min: 100000, max: 140000 },
       type: 'full-time',
-      requirements: ['Node.js', 'React', 'MongoDB', 'Express', 'AWS', 'Docker'],
+      requirements: ['Node.js', 'React', 'MongoDB', 'Express', 'AWS', 'Docker', 'GraphQL', 'PostgreSQL'],
       postedBy: 'employer2',
       applications: ['4', '5'],
       ratings: [],
@@ -70,12 +68,12 @@ const FindJobs: React.FC = () => {
     {
       _id: '3',
       title: 'UI/UX Designer',
-      description: 'We are seeking a creative UI/UX designer to create amazing user experiences. You will work closely with our product team to design intuitive and beautiful interfaces.',
+      description: 'We are seeking a creative UI/UX designer to create amazing user experiences. You will work closely with our product team to design intuitive and beautiful interfaces. Experience with design systems and user research is highly valued.',
       company: 'Design Studio',
       location: 'Remote',
       salary: { min: 80000, max: 110000 },
       type: 'full-time',
-      requirements: ['Figma', 'Adobe Creative Suite', 'Prototyping', 'User Research', 'Wireframing'],
+      requirements: ['Figma', 'Adobe Creative Suite', 'Prototyping', 'User Research', 'Wireframing', 'Design Systems'],
       postedBy: 'employer3',
       applications: ['6'],
       ratings: [],
@@ -86,12 +84,12 @@ const FindJobs: React.FC = () => {
     {
       _id: '4',
       title: 'Backend Developer',
-      description: 'Looking for a skilled backend developer to work on our API infrastructure and database systems. You\'ll be responsible for building scalable and secure backend services.',
+      description: 'Looking for a skilled backend developer to work on our API infrastructure and database systems. You\'ll be responsible for building scalable and secure backend services that power our applications.',
       company: 'DataTech Solutions',
       location: 'Austin, TX',
       salary: { min: 95000, max: 130000 },
       type: 'full-time',
-      requirements: ['Python', 'Django', 'PostgreSQL', 'Docker', 'Redis', 'API Design'],
+      requirements: ['Python', 'Django', 'PostgreSQL', 'Docker', 'Redis', 'API Design', 'Microservices'],
       postedBy: 'employer4',
       applications: ['7', '8', '9'],
       ratings: [],
@@ -107,7 +105,7 @@ const FindJobs: React.FC = () => {
       location: 'Seattle, WA',
       salary: { min: 110000, max: 150000 },
       type: 'full-time',
-      requirements: ['AWS', 'Kubernetes', 'Terraform', 'CI/CD', 'Linux', 'Monitoring'],
+      requirements: ['AWS', 'Kubernetes', 'Terraform', 'CI/CD', 'Linux', 'Monitoring', 'Jenkins'],
       postedBy: 'employer5',
       applications: ['10'],
       ratings: [],
@@ -148,7 +146,8 @@ const FindJobs: React.FC = () => {
       filtered = filtered.filter(job =>
         job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        job.description.toLowerCase().includes(searchTerm.toLowerCase())
+        job.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        job.requirements.some(req => req.toLowerCase().includes(searchTerm.toLowerCase()))
       );
       
       // Add to recent searches if not already there
@@ -182,6 +181,24 @@ const FindJobs: React.FC = () => {
     if (job) {
       setSelectedJob(job);
       setShowApplicationModal(true);
+    }
+  };
+
+  const handleViewDetails = (jobId: string) => {
+    const job = sampleJobs.find(j => j._id === jobId);
+    if (job) {
+      setSelectedJob(job);
+      setShowJobDetailsModal(true);
+    }
+  };
+
+  const handleSave = (jobId: string) => {
+    if (savedJobs.includes(jobId)) {
+      setSavedJobs(savedJobs.filter(id => id !== jobId));
+      alert('Job removed from saved jobs!');
+    } else {
+      setSavedJobs([...savedJobs, jobId]);
+      alert('Job saved successfully!');
     }
   };
 
@@ -236,10 +253,6 @@ const FindJobs: React.FC = () => {
     setSelectedJob(null);
   };
 
-  const handleSave = (jobId: string) => {
-    alert(`Job ${jobId} saved to your saved jobs!`);
-  };
-
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -255,6 +268,14 @@ const FindJobs: React.FC = () => {
     { label: '$120k - $160k', value: '120000-160000' },
     { label: 'Above $160k', value: '160000-999999' }
   ];
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -378,12 +399,97 @@ const FindJobs: React.FC = () => {
       {/* Results */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {filteredJobs.map((job) => (
-          <JobCard
-            key={job._id}
-            job={job}
-            onApply={handleApply}
-            onSave={handleSave}
-          />
+          <div key={job._id} className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-200 hover:scale-[1.02]">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex-1">
+                <h3 className="text-xl font-bold text-gray-900 mb-2">{job.title}</h3>
+                <p className="text-gray-600 font-medium mb-1">{job.company}</p>
+                <div className="flex items-center text-gray-500 text-sm space-x-4">
+                  <div className="flex items-center">
+                    <MapPin className="w-4 h-4 mr-1" />
+                    {job.location}
+                  </div>
+                  <div className="flex items-center">
+                    <Clock className="w-4 h-4 mr-1" />
+                    {formatDate(job.createdAt)}
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                {job.averageRating > 0 && (
+                  <div className="flex items-center bg-yellow-50 px-2 py-1 rounded-lg">
+                    <Star className="w-4 h-4 text-yellow-500 mr-1" />
+                    <span className="text-sm font-medium text-yellow-700">{job.averageRating.toFixed(1)}</span>
+                  </div>
+                )}
+                <button
+                  onClick={() => handleSave(job._id)}
+                  className={`p-2 rounded-lg transition-colors ${
+                    savedJobs.includes(job._id)
+                      ? 'text-blue-600 bg-blue-50'
+                      : 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'
+                  }`}
+                >
+                  <Bookmark className={`w-5 h-5 ${savedJobs.includes(job._id) ? 'fill-current' : ''}`} />
+                </button>
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <p className="text-gray-700 line-clamp-2">{job.description}</p>
+            </div>
+
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center text-green-600">
+                  <DollarSign className="w-4 h-4 mr-1" />
+                  <span className="font-medium">
+                    ${job.salary.min.toLocaleString()} - ${job.salary.max.toLocaleString()}
+                  </span>
+                </div>
+                <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">
+                  {job.type}
+                </span>
+              </div>
+              <div className="flex items-center text-gray-500 text-sm">
+                <Users className="w-4 h-4 mr-1" />
+                {job.applications.length} applications
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <div className="flex flex-wrap gap-2">
+                {job.requirements.slice(0, 3).map((req, index) => (
+                  <span
+                    key={index}
+                    className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-lg"
+                  >
+                    {req}
+                  </span>
+                ))}
+                {job.requirements.length > 3 && (
+                  <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-lg">
+                    +{job.requirements.length - 3} more
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <button
+                onClick={() => handleApply(job._id)}
+                className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
+              >
+                Apply Now
+              </button>
+              <button
+                onClick={() => handleViewDetails(job._id)}
+                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                View Details
+              </button>
+            </div>
+          </div>
         ))}
       </div>
 
@@ -394,6 +500,104 @@ const FindJobs: React.FC = () => {
           </div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">No jobs found</h3>
           <p className="text-gray-500">Try adjusting your search criteria or filters</p>
+        </div>
+      )}
+
+      {/* Job Details Modal */}
+      {showJobDetailsModal && selectedJob && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">{selectedJob.title}</h2>
+                <button
+                  onClick={() => setShowJobDetailsModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2">
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3">Job Description</h3>
+                      <p className="text-gray-700 leading-relaxed">{selectedJob.description}</p>
+                    </div>
+
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3">Requirements</h3>
+                      <div className="grid grid-cols-2 gap-2">
+                        {selectedJob.requirements.map((req, index) => (
+                          <div key={index} className="flex items-center">
+                            <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                            <span className="text-gray-700">{req}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h3 className="font-semibold text-gray-900 mb-3">Job Information</h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center">
+                        <Building className="w-4 h-4 text-gray-500 mr-2" />
+                        <span className="text-gray-700">{selectedJob.company}</span>
+                      </div>
+                      <div className="flex items-center">
+                        <MapPin className="w-4 h-4 text-gray-500 mr-2" />
+                        <span className="text-gray-700">{selectedJob.location}</span>
+                      </div>
+                      <div className="flex items-center">
+                        <DollarSign className="w-4 h-4 text-gray-500 mr-2" />
+                        <span className="text-gray-700">
+                          ${selectedJob.salary.min.toLocaleString()} - ${selectedJob.salary.max.toLocaleString()}
+                        </span>
+                      </div>
+                      <div className="flex items-center">
+                        <Briefcase className="w-4 h-4 text-gray-500 mr-2" />
+                        <span className="text-gray-700 capitalize">{selectedJob.type}</span>
+                      </div>
+                      <div className="flex items-center">
+                        <Calendar className="w-4 h-4 text-gray-500 mr-2" />
+                        <span className="text-gray-700">Posted {formatDate(selectedJob.createdAt)}</span>
+                      </div>
+                      <div className="flex items-center">
+                        <Users className="w-4 h-4 text-gray-500 mr-2" />
+                        <span className="text-gray-700">{selectedJob.applications.length} applications</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <button
+                      onClick={() => {
+                        setShowJobDetailsModal(false);
+                        handleApply(selectedJob._id);
+                      }}
+                      className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
+                    >
+                      Apply for this Job
+                    </button>
+                    <button
+                      onClick={() => handleSave(selectedJob._id)}
+                      className={`w-full px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
+                        savedJobs.includes(selectedJob._id)
+                          ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                          : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      {savedJobs.includes(selectedJob._id) ? 'Saved' : 'Save Job'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
@@ -408,7 +612,7 @@ const FindJobs: React.FC = () => {
                   onClick={() => setShowApplicationModal(false)}
                   className="text-gray-400 hover:text-gray-600"
                 >
-                  ×
+                  <X className="w-6 h-6" />
                 </button>
               </div>
 
@@ -590,6 +794,7 @@ const FindJobs: React.FC = () => {
                     </div>
                   </div>
                 </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Cover Letter *
@@ -661,6 +866,7 @@ const FindJobs: React.FC = () => {
                     </div>
                   </div>
                 </div>
+
                 <div className="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
                   <button
                     onClick={() => setShowApplicationModal(false)}
